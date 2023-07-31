@@ -40,7 +40,7 @@ int keyBrightness = 40;       // Brightness control variable. Used to divide the
                        // In fact 255 is obnoxiously bright, so this use this variable to reduce the value. It also reduces the current draw on the USB
 uint16_t keyHue = 4335; 
 
-#define LDO_power     17 //ldo power swith pin
+#define LDO_power     17 //ldo power switch pin
 
 
 /********************************************************/
@@ -64,7 +64,7 @@ RelativeReport data;
 const byte ROWS = 4; //four rows
 const byte COLS = 4; //four columns
 //define the cymbols on the buttons of the keypads
-char Keys[ROWS][COLS] = {
+char keys[ROWS][COLS] = {
   {'4','5','6','7'},
   {'8','9','A','B'},
   {'C','D','E','F'},
@@ -76,13 +76,18 @@ byte rowPins[ROWS] = {38, 39, 40, 12}; //connect to the row pinouts of the keypa
 byte colPins[COLS] = {42, 41, 6, 34}; //connect to the column pinouts of the keypad
 
 //initialize an instance of class NewKeypad
-Keypad customKeypad = Keypad( makeKeymap(Keys), rowPins, colPins, ROWS, COLS); 
+Keypad customKeypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS); 
+String keypadDebugMsg;
+unsigned long loopCount;
+unsigned long startTime;
 
 
 
 
 void setup() {
   Serial.begin(115200);
+
+  keypadDebugMsg = "";
   
   Keyboard.begin();
   USB.begin();
@@ -114,14 +119,48 @@ void setup() {
   pixels.fill(pixels.gamma32(pixels.ColorHSV(keyHue)), 0, pixels.numPixels());
   pixels.show();
   delay(1000);
+
+    loopCount = 0;
+    startTime = millis();
+  
 }
 
 void loop() {
 
-  char customKey = customKeypad.getKey();
 
-  if (customKey){
-    Keyboard.write(customKey);
+  loopCount++;
+  if ( (millis()-startTime)>5000 ) {
+      Serial.print("Average loops per second = ");
+      Serial.println(loopCount/5);
+      startTime = millis();
+      loopCount = 0;
+  }
+
+  if (customKeypad.getKeys())
+  {
+    for (int i=0; i<LIST_MAX; i++)   // Scan the whole key list.
+        {
+            if ( customKeypad.key[i].stateChanged )   // Only find keys that have changed state.
+            {
+                switch (customKeypad.key[i].kstate) {  // Report active key state : IDLE, PRESSED, HOLD, or RELEASED
+                    case PRESSED:
+                    //keypadDebugMsg = " PRESSED.";
+                    Keyboard.write(customKeypad.key[i].kchar);
+                break;
+                    case HOLD:
+                    //keypadDebugMsg = " HOLD.";
+                break;
+                    case RELEASED:
+                    //keypadDebugMsg = " RELEASED.";
+                break;
+                    case IDLE:
+                    //keypadDebugMsg = " IDLE.";
+                }
+                //Serial.print("Key ");
+                //Serial.print(customKeypad.key[i].kchar);
+                //Serial.println(keypadDebugMsg);
+            }
+        }
   }
 
   if (trackpad.available()) {
