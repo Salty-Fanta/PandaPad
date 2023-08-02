@@ -155,6 +155,7 @@ void loop() {
                 break;
                     case IDLE:
                     //keypadDebugMsg = " IDLE.";
+                break;
                 }
                 //Serial.print("Key ");
                 //Serial.print(customKeypad.key[i].kchar);
