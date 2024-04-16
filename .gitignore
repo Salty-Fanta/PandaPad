@@ -121,6 +121,7 @@ test_multi_heap_host
 
 # VS Code Settings
 .vscode/
+*.old
 
 # VIM files
 *.swp
@@ -140,6 +141,7 @@ flake8_output.txt
 
 # ESP-IDF default build directory name
 build
+.devcontainer/
 
 # lock files for examples and components
 dependencies.lock
