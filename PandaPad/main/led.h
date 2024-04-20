@@ -21,7 +21,4 @@ void backlight_off(void);
 
 led_strip_handle_t configure_led(void);
 
-
-
-
 #endif
