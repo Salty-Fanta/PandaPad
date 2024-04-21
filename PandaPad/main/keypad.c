@@ -1,9 +1,12 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "driver/gpio.h"
 #include "esp_log.h"
 #include "esp_err.h"
 #include "iot_button.h"
+#include "led_strip.h"
+#include "led.h"
 
 #include "keypad.h"
 
@@ -16,9 +19,9 @@
 -----------------------------
 |           | 4 | 5 | 6 | 7 |
 -           -----------------
-| Touchpad  | 8 | 9 | A | B |
+| Touchpad  | 8 | 9 | 10| 11|
 -           -----------------
-|           | C | D | E | F |
+|           | 12| 13| 14| 15|
 -----------------------------
 */
 
@@ -26,9 +29,9 @@ static const char *TAG = "BUTTON TEST";
 
 const char* keys[NUMBER_OF_ROWS][NUMBER_OF_COLUMNS] = {
   {"4","5","6","7"},
-  {"8","9","A","B"},
-  {"C","D","E","F"},
-  {"0","1","2","3"}
+  {"11","10","9","8"},
+  {"12","13","14","15"},
+  {"1","0","2","3"}
 };
 
 static const char* get_btn_index(button_handle_t btn)
@@ -44,42 +47,44 @@ static const char* get_btn_index(button_handle_t btn)
     return NULL; // Return NULL if the button is not found
 }
 
-static void button_press_down_cb(void *arg, void *data)
+void button_press_down_cb(void *arg, void *data)
 {
     ESP_LOGI(TAG, "BTN%s: BUTTON_PRESS_DOWN", get_btn_index((button_handle_t)arg));
+    turn_on_backlight(atoi(get_btn_index((button_handle_t)arg)));
 }
 
-static void button_press_up_cb(void *arg, void *data)
+void button_press_up_cb(void *arg, void *data)
 {
     ESP_LOGI(TAG, "BTN%s: BUTTON_PRESS_UP[%d]", get_btn_index((button_handle_t)arg), iot_button_get_ticks_time((button_handle_t)arg));
+    turn_off_backlight(atoi(get_btn_index((button_handle_t)arg)));
 }
 
-static void button_press_repeat_cb(void *arg, void *data)
+void button_press_repeat_cb(void *arg, void *data)
 {
     ESP_LOGI(TAG, "BTN%s: BUTTON_PRESS_REPEAT[%d]", get_btn_index((button_handle_t)arg), iot_button_get_repeat((button_handle_t)arg));
 }
 
-static void button_single_click_cb(void *arg, void *data)
+void button_single_click_cb(void *arg, void *data)
 {
     ESP_LOGI(TAG, "BTN%s: BUTTON_SINGLE_CLICK", get_btn_index((button_handle_t)arg));
 }
 
-static void button_double_click_cb(void *arg, void *data)
+void button_double_click_cb(void *arg, void *data)
 {
     ESP_LOGI(TAG, "BTN%s: BUTTON_DOUBLE_CLICK", get_btn_index((button_handle_t)arg));
 }
 
-static void button_long_press_start_cb(void *arg, void *data)
+void button_long_press_start_cb(void *arg, void *data)
 {
     ESP_LOGI(TAG, "BTN%s: BUTTON_LONG_PRESS_START", get_btn_index((button_handle_t)arg));
 }
 
-static void button_long_press_hold_cb(void *arg, void *data)
+void button_long_press_hold_cb(void *arg, void *data)
 {
     ESP_LOGI(TAG, "BTN%s: BUTTON_LONG_PRESS_HOLD[%d],count is [%d]", get_btn_index((button_handle_t)arg), iot_button_get_ticks_time((button_handle_t)arg), iot_button_get_long_press_hold_cnt((button_handle_t)arg));
 }
 
-static void button_press_repeat_done_cb(void *arg, void *data)
+void button_press_repeat_done_cb(void *arg, void *data)
 {
     ESP_LOGI(TAG, "BTN%s: BUTTON_PRESS_REPEAT_DONE[%d]", get_btn_index((button_handle_t)arg), iot_button_get_repeat((button_handle_t)arg));
 }
@@ -115,3 +120,6 @@ void initialize_keypad() {
         }
     }
 }
+
+
+
