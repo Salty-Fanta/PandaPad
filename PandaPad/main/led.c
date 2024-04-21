@@ -7,6 +7,8 @@
 
 static const char *TAG = "LED";
 
+led_strip_handle_t led_strip;
+
 // void backlight_off(void)
 // {
 //     led_strip_clear(led_strip);
@@ -39,4 +41,18 @@ led_strip_handle_t configure_led(void)
 
     /* Set all LED off to clear all pixels */
     led_strip_clear(led_strip);
+}
+
+void turn_on_backlight(int lednr){
+    led_strip_set_pixel(led_strip, lednr, 10, 10, 10);
+    led_strip_refresh(led_strip);
+}
+
+void turn_off_backlight(int lednr){
+    led_strip_set_pixel(led_strip, lednr, 0, 0, 0);
+    led_strip_refresh(led_strip);
+}
+
+void init_led(void){
+    led_strip = configure_led();
 }
