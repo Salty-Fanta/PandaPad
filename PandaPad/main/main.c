@@ -11,9 +11,10 @@
 #include "iot_button.h"
 
 //include local sources
-
 #include "led.h"
 #include "keypad.h"
+#include "cirque_pinnacle.h"
+
 
 /* PandaPad key positions
 
@@ -30,34 +31,27 @@
 -----------------------------
 */
 
-
-
-
-
+extern bool touchpad_init;
 
 void app_main(void)
 {
+    pinnacle_data_t touch_results = {0};
     gpio_set_direction(17, GPIO_MODE_OUTPUT);
     gpio_set_level(17, 1);
     vTaskDelay(100);
 
- 
-
-
-    //led_strip_handle_t led_strip = configure_led();
     init_led();
     turn_on_backlight(2);
     turn_on_backlight(3);
 
     initialize_keypad();
 
-
-
-
-
+    cirque_pinnacle_init();
 
     while(1){
-        vTaskDelay(10);
-
+        vTaskDelay(100);
+        touch_results = cirque_pinnacle_read_data();
+        //ESP_LOGI("Touch_Data", "Tmain, touchpad_init = %d", touchpad_init);
+        ESP_LOGI("Touch_Data", "Data_ready= %d, X= %d, Y= %d", touch_results.valid , touch_results.xValue, touch_results.yValue);
     }
 }

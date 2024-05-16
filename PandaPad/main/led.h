@@ -13,8 +13,6 @@
 
 //static uint8_t s_led_state = 0;
 
-//extern led_strip_handle_t led_strip;
-
 // Functions
 
 //void backlight_off(void);
@@ -24,6 +22,5 @@ void turn_off_backlight(int lednr);
 
 void init_led(void);
 
-//led_strip_handle_t configure_led(void);
 
 #endif
