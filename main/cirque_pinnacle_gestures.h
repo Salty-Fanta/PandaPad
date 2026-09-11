@@ -17,12 +17,47 @@
 #pragma once
 
 #include "cirque_pinnacle.h"
-//#include "report.h"
+// #include "report.h"
 
 typedef struct {
     bool tap_enable;
     bool circular_scroll_enable;
 } cirque_pinnacle_features_t;
+
+#ifdef MOUSE_EXTENDED_REPORT
+#    define MOUSE_REPORT_XY_MIN (INT16_MIN + 1)
+#    define MOUSE_REPORT_XY_MAX INT16_MAX
+typedef int16_t mouse_xy_report_t;
+#else
+#    define MOUSE_REPORT_XY_MIN (INT8_MIN + 1)
+#    define MOUSE_REPORT_XY_MAX INT8_MAX
+typedef int8_t mouse_xy_report_t;
+#endif
+
+#ifdef WHEEL_EXTENDED_REPORT
+#    define MOUSE_REPORT_HV_MIN (INT16_MIN + 1)
+#    define MOUSE_REPORT_HV_MAX INT16_MAX
+typedef int16_t mouse_hv_report_t;
+#else
+#    define MOUSE_REPORT_HV_MIN (INT8_MIN + 1)
+#    define MOUSE_REPORT_HV_MAX INT8_MAX
+typedef int8_t mouse_hv_report_t;
+#endif
+
+typedef struct {
+#ifdef MOUSE_SHARED_EP
+    uint8_t report_id;
+#endif
+    uint8_t buttons;
+#ifdef MOUSE_EXTENDED_REPORT
+    int8_t boot_x;
+    int8_t boot_y;
+#endif
+    mouse_xy_report_t x;
+    mouse_xy_report_t y;
+    mouse_hv_report_t v;
+    mouse_hv_report_t h;
+} report_mouse_t;
 
 #if defined(CIRQUE_PINNACLE_TAP_ENABLE) && CIRQUE_PINNACLE_POSITION_MODE
 #    ifndef CIRQUE_PINNACLE_TAPPING_TERM
